@@ -72,9 +72,9 @@ class Sim_Play_Strat:
             if game_piece.equals(Player.ships[key]):
                 self.ship_sunk_list.append(key)
                 ship_name = ship_names[self.ship_sunk_list[-1]]
-                #print(f'You sunk my {ship_name}!')
+                print(f'You sunk my {ship_name}!')
                 del self.ship_part_dict[ident_to_delete]
-                #print(atk_player.get_shoot_board())
+                print(atk_player.get_shoot_board())
 
     def pick_loc_strat(self, atk_player, def_player, seed):
         dir_list_counter, cap = 0, 1

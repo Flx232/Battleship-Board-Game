@@ -33,10 +33,12 @@ class Player_Action:
             else:
                 end_loc = Operations.addition(begin_loc, (1, game_piece.get_specifier()))
         except OutOfBounds:
+            print(f'End_loc is out of bounds! end_loc: {end_loc}')
             return False
         
         if self.__is_collision(player.get_own_board(), begin_loc, end_loc):
             player = self.__place_ship(player, ship, begin_loc, end_loc)
+            print(player.get_own_board())
             return True
         return False
 
@@ -46,6 +48,7 @@ class Player_Action:
         for row in range(bx, rx, 1):
             for col in range(by, ry, 1):
                 if board[row][col] != 0:
+                    print(f'There is a collision! Point of collision: {(row,col)}')
                     return False
         return True
 
@@ -67,6 +70,7 @@ class Player_Action:
         rx, ry = coords[0][-1]+1, coords[1][-1]+1
         board[bx:rx, by:ry] = 0
         player.update_own_board(board)
+        print(player.get_own_board())
         return player
 
     def is_hit(self, player, target: tuple):

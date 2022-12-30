@@ -72,9 +72,9 @@ class Sim_Play_Strat:
             if game_piece.equals(Player.ships[key]):
                 self.ship_sunk_list.append(key)
                 ship_name = ship_names[self.ship_sunk_list[-1]]
-                print(f'You sunk my {ship_name}!')
+                #print(f'You sunk my {ship_name}!')
                 del self.ship_part_dict[ident_to_delete]
-                print(atk_player.get_shoot_board(), '\n')
+                #print(atk_player.get_shoot_board())
 
     def pick_loc_strat(self, atk_player, def_player, seed):
         dir_list_counter, cap = 0, 1
@@ -136,6 +136,7 @@ class Bot_Player_Info(Player):
     target_loc, point_of_contact = (), ()
     ship_ident = None
     ship_found = False
+    possible_ship_length = [5, 4, 3, 3, 2]
     dir_list = ['LEFT', 'RIGHT', 'UP', 'DOWN']
     is_horizontal, is_vertical = False, False
     dir_list_counter, cap = 0, 1
@@ -179,11 +180,12 @@ class Bot_Player_Info(Player):
             ident_to_delete = key
         for key in Player.ships:
             if game_piece.equals(Player.ships[key]):
+                self.possible_ship_length.remove(game_piece.get_specifier())
                 self.ship_sunk_list.append(key)
                 ship_name = ship_names[self.ship_sunk_list[-1]]
-                print(f'You sunk my {ship_name}!')
+                #print(f'You sunk my {ship_name}!')
                 del self.ship_part_dict[ident_to_delete]
-                print(self.get_shoot_board())
+                #print(self.get_shoot_board())
 
     def get_ship_sunk_list(self):
         return self.ship_sunk_list;
@@ -203,32 +205,26 @@ class Bot_Player_Info(Player):
         if self.ship_found:
             if self.is_vertical:
                 self.dir_list_counter, self.cap = 2, 3
-            enum_pos = Operations.get_enum_pos(self.dir_list[self.dir_list_counter])
-            repeat_check_adj = False
             while True:
+                enum_pos = Operations.get_enum_pos(self.dir_list[self.dir_list_counter])
                 if not self.__checker(enum_pos, self.dir_list_counter):
-                    enum_pos = Operations.get_enum_pos(self.dir_list[self.dir_list_counter])
                     continue
 
                 if Operations.get_cell(self.get_shoot_board(), self.target_loc) == 1:
                     self.point_of_contact = self.target_loc
-                    continue
+                elif Operations.get_cell(self.get_shoot_board(), self.target_loc) == 2:
+                    self.target_loc = self.point_of_contact
+                    self.dir_list_counter += 1
                 else:
-                    if Operations.get_cell(self.get_shoot_board(), self.target_loc) == 2:
-                        self.target_loc = self.point_of_contact
-                        self.dir_list_counter += 1
-                    else:
-                        temp = self.point_of_contact
-                        repeat_check_adj = True
+                    temp = self.point_of_contact
                     break
         else:
             self.target_loc = Rand_Loc.get_rand_loc(seed, self)
-            seed += 1
         cell_ident = Operations.get_cell(self.get_shoot_board(), self.target_loc)  
         while cell_ident == 1 or cell_ident == 2:
+            seed += 1
             self.target_loc = Rand_Loc.get_rand_loc(seed, self)
             cell_ident = Operations.get_cell(self.get_shoot_board(), self.target_loc)
-            seed += 1
         color = Color_Cell()
         ship_ident = color._Color_Cell__mark_cell(self.target_loc, seed, self, def_player)
         if ship_ident:
@@ -236,6 +232,10 @@ class Bot_Player_Info(Player):
             self.ship_found = True
             if ship_ident in self.ship_part_dict:
                 self.ship_part_dict[ship_ident] += 1
+                if self.ship_part_dict[ship_ident] == max(self.possible_ship_length):
+                    self.dir_list_counter = self.cap + 1
+                    self.__is_sunk()
+                    return self.get_shoot_board()
             else:
                 self.ship_part_dict[ship_ident] = 1
         else:

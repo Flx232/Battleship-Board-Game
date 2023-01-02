@@ -1,3 +1,4 @@
+"""Classes containing methods reliant on user input"""
 from battle_ship.start_game.rand_gen import Rand_Vals
 from battle_ship.set_game import Player_Action
 from battle_ship.start_game.sim.sim_play import Color_Cell
@@ -6,30 +7,9 @@ from battle_ship.game_pieces import Pieces
 from battle_ship.player import Player
 
 
-class Sim_Start_Game:
-    def __get_pos(self, x):
-        pos = ('LEFT', 'RIGHT', 'DOWN', 'UP')
-        index = Rand_Vals.get_random_index(x)
-        return pos[index]
-
-    def pre_game(self, player):
-        action = Player_Action()
-        ships = ['U', 'B', 'C', 'D', 'S']
-        counter = 1
-        while ships:
-            ship = ships.pop()
-            pos = self.__get_pos(counter)
-            begin_loc = Rand_Vals.get_random_loc(counter)
-            can_place = action.ship_placement(player, ship, begin_loc, pos)
-            while not can_place:
-                counter += 1
-                pos = self.__get_pos(counter)
-                begin_loc = Rand_Vals.get_random_loc(counter)
-                can_place = action.ship_placement(player, ship, begin_loc, pos)
-            counter += 1
-        return player
-
 class Get_Coord:
+    """Gets the coord from user"""
+
     @staticmethod
     def coord(self):
         row = int(input('Enter the row: \n'))
@@ -37,24 +17,26 @@ class Get_Coord:
         return (row, col)
 
 class Player_Start_Game:
+    """Player pre game setup for user"""
     ship_list = ['U', 'B', 'C', 'D', 'S']
-    pos_list = ('LEFT', 'RIGHT', 'DOWN', 'UP')
     used_ship_list = []
 
-    def __place_ship(self, player, action):      
+    def __place_ship(self, player, action):
+        """Places ship using inputs from user"""
         ships = ', '.join(str(x) for x in self.ship_list)
         ship = input(f'Pick a ship ({ships}): \n').upper()
-        pos = input(f'Enter an orientation {self.pos_list}: \n').upper()
+        pos = input(f'Enter an orientation {Config.pos_list}: \n').upper()
         loc = Get_Coord.coord()
         can_place = action.ship_placement(player, ship, loc, pos)
         while not can_place:
-            pos = input(f'Enter an orientation {self.pos_list}: \n').upper()
+            pos = input(f'Enter an orientation {Config.pos_list}: \n').upper()
             loc = Get_Coord.coord()
             can_place = action.ship_placement(player, ship, begin_loc, pos)
         self.ship_list.remove(ship)
         self.used_ship_list.append(ship)
 
     def __remove_ship(self, player, action):
+        """Removes ship from board using inputs from user"""
         ships = ','.join(str(x) for x in self.used_ship_list)
         ship = input(f'Pick a ship ({ships}): \n').upper()
         can_remove = action.remove_ship(player, ship)
@@ -66,6 +48,7 @@ class Player_Start_Game:
         self.ship_list.append(ship)
 
     def pre_game(self, player):
+        """Caller that calls respective function based on input from user"""
         action = Player_Action()
         while self.ship_list:
             decider = input('PLACE or REMOVE\n').upper()
@@ -78,26 +61,33 @@ class Player_Start_Game:
         return player
 
 class Playing(Player):
+    """Playing class that is subclass of Player"""
     ship_sunk_list = []
     
     @classmethod
     def create(cls):
+        """Factory Method"""
         return cls()
 
     def __init__(self):
+        """Constructor"""
         super().__init__()
         self.ship_part_dict = {}
 
     def get_ship_part_dict(self):
+        """Gets ship part dict"""
         return self.ship_part_dict
 
     def set_ship_part_dict(self, new_dict):
+        """Sets ship part dict"""
         self.ship_part_dict = new_dict
 
     def get_ship_sunk_list(self):
+        """Gets ship part dict"""
         return self.ship_sunk_list
     
     def __mark_cell(self, target_loc, def_player, action):
+        """Marks cell that has been hit"""
         ship_ident = None
         if action.is_hit(def_player, target_loc):
             ship_ident = Operations.get_cell(def_player.get_own_board(), target_loc)
@@ -109,7 +99,7 @@ class Playing(Player):
         return ship_ident
 
     def __is_ship_sunk(self, ship_part_dict):
-        ship_names = {'U':'Submarine', 'C':'Carrier', 'D':'Destroyer', 'B':'Battleship', 'S':'Cruiser'}
+        """Checks if the ship has been sunk and tells user"""
         game_piece_list = {}
         for key, val in ship_part_dict.items():
             game_piece = Pieces.create(key, val)
@@ -118,7 +108,7 @@ class Playing(Player):
             for piece_key in game_pieces_list:
                 if game_piece_list[piece_key].equals(Player.ships[ship_key]):
                     self.ship_sunk_list.append(ship_key)
-                    ship_name = ship_names[self.ship_sunk_list[-1]]
+                    ship_name = Config.ship_names[self.ship_sunk_list[-1]]
                     ident_to_delete = piece_key
                     del ship_part_dict[ident_to_delete]
                     print(f'You sunk my {ship_name}!')
@@ -126,6 +116,7 @@ class Playing(Player):
         return ship_part_dict
 
     def play_game(self, def_player):
+        """Caller function that calls other functions"""
         action = Player_Action()
         temp_dict = self.__is_ship_sunk(self.get_ship_part_dict())
         loc = Get_Coord.coord()

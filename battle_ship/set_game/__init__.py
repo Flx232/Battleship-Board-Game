@@ -1,3 +1,4 @@
+"""Player_Action class that has all actions player can do"""
 from battle_ship.config import Config
 from battle_ship.player import Player
 from battle_ship.operations import Operations
@@ -6,10 +7,12 @@ import numpy as np
 
 
 class Player_Action:
+    
     def ship_placement(self, player, ship, begin_loc: tuple, pos):
+        """Takes in player info, ship (string), coord, and orientation"""
         try:
-            game_piece = player.ships[ship]
-            if game_piece not in player.ship_list:
+            game_piece = Config.ships[ship]
+            if game_piece not in player.get_ships():
                 return 'This piece has already been placed'
         except KeyError:
             print('Invalid Ship')
@@ -17,6 +20,7 @@ class Player_Action:
         enum_pos = Operations.get_enum_pos(pos)
         end_loc = (0,0)
         try:
+            """Finds the end coord of ship and checks if out of bounds in Operations class"""
             if enum_pos == Config.Position.LEFT:
                 begin_loc = Operations.addition(begin_loc, (1, 1))
                 end_loc = begin_loc
@@ -37,12 +41,14 @@ class Player_Action:
             return False
         
         if self.__is_collision(player.get_own_board(), begin_loc, end_loc):
+            """Checks collision before actually placing down ship"""
             player = self.__place_ship(player, ship, begin_loc, end_loc)
             print(player.get_own_board())
             return True
         return False
 
     def __is_collision(self, board, begin_loc: tuple, end_loc:tuple):
+        """Checks if there are any ships in between the two coords"""
         bx, by = begin_loc
         rx, ry = end_loc
         for row in range(bx, rx, 1):
@@ -53,6 +59,7 @@ class Player_Action:
         return True
 
     def __place_ship(self, player, ship, begin_loc: tuple, end_loc: tuple):
+        """Finalizes placement of ship"""
         game_piece = player.remove_ship(ship)
         bx, by = begin_loc
         rx, ry = end_loc
@@ -62,6 +69,7 @@ class Player_Action:
         return player
     
     def remove_ship(self, player, ship: str):
+        """Removes ship from board"""
         board = player.get_own_board()
         player.add_ship(ship)
         game_piece = player.get_ships()[-1]
@@ -74,5 +82,6 @@ class Player_Action:
         return player
 
     def is_hit(self, player, target: tuple):
+        """Checks if ship got hit by player"""
         return Operations.get_cell(player.get_own_board(), target) != 0
 

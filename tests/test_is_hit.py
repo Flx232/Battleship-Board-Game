@@ -1,3 +1,4 @@
+"""Tests if function raises hit flag"""
 from battle_ship.player import Player
 from battle_ship.set_game import Player_Action
 

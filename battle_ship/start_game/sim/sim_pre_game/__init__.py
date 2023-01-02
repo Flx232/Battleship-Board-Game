@@ -1,17 +1,21 @@
 from battle_ship.start_game.rand_gen import Rand_Vals
 from battle_ship.set_game import Player_Action
+from battle_ship.config import Config
 
 
 class Sim_Start_Game:
-    def __get_pos(self, x):
-        pos = ('LEFT', 'RIGHT', 'DOWN', 'UP')
-        index = Rand_Vals.get_random_index(x)
-        return pos[index]
 
-    def pre_game(self, player):
+    def __get_pos(self, x):
+        """Gets a random position"""
+        index = Rand_Vals.get_random_index(x)
+        return Config.pos_list[index]
+
+    def pre_game(self, player, seed):
+        """Complete random setup"""
         action = Player_Action()
+        """List of ships to let algo know when to stop (when all ships used)"""
         ships = ['U', 'B', 'C', 'D', 'S']
-        counter = 1
+        counter = seed
         while ships:
             ship = ships.pop()
             pos = self.__get_pos(counter)

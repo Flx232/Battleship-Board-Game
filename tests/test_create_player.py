@@ -1,3 +1,4 @@
+"""Tests player class"""
 from battle_ship.game_pieces import Pieces
 from battle_ship.player import Player
 

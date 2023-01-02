@@ -1,3 +1,4 @@
+"""Tests User input base pre-game setup Functions"""
 from battle_ship.start_game import Player_Start_Game
 from battle_ship.player import Player
 

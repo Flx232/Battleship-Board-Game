@@ -1,3 +1,4 @@
+"""Tests get_cell operation"""
 from battle_ship.operations import Operations
 from battle_ship.player import Player
 

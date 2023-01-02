@@ -1,9 +1,11 @@
+"""Tests Playing class"""
 from battle_ship.start_game import Player_Start_Game, Playing
 from battle_ship.start_game.sim.sim_pre_game import Sim_Start_Game
 from battle_ship.start_game.sim.sim_play import Bot_Player_Info
 
 
 def print_sinks(temp, player):
+    """Prints the shoot board and ship list when ship gets sunk"""
     if temp < len(player.get_ship_sunk_list()):
         temp = len(player.get_ship_sunk_list())
         print(player1.get_shoot_board())

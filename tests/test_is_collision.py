@@ -1,3 +1,4 @@
+"""Tests if function raises collision"""
 from battle_ship.config import Config
 from battle_ship.set_game import Player_Action
 from battle_ship.player import Player
